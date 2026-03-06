@@ -19,7 +19,6 @@ const provider = new GoogleAuthProvider();
 let currentUser = null;
 let spendingChart;
 
-// Auth State Listener
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -32,14 +31,11 @@ onAuthStateChanged(auth, (user) => {
             </span>
         `;
         document.getElementById('user-photo').src = user.photoURL;
-
-        // Load data from Firestore
         initFirestoreSync();
     } else {
         currentUser = null;
         document.getElementById('login-btn').style.display = 'block';
         document.getElementById('user-info').style.display = 'none';
-        // Clear data or show login placeholder
     }
 });
 
@@ -55,7 +51,6 @@ async function logout() {
     await signOut(auth);
 }
 
-// Firestore Sync
 function initFirestoreSync() {
     const billsRef = collection(db, "users", currentUser.uid, "bills");
     const q = query(billsRef, orderBy("timestamp", "desc"), limit(20));
@@ -68,17 +63,13 @@ function initFirestoreSync() {
 }
 
 function renderDashboard(bills) {
-    // Summary
     const totalSpent = bills.reduce((sum, b) => sum + (b.amount || 0), 0);
     document.getElementById('month-spent').innerText = `¥ ${totalSpent.toLocaleString()}`;
-
-    // Net wealth placeholder (could fetch from investment collection)
     document.getElementById('net-wealth').innerText = `¥ ${(0 - totalSpent).toLocaleString()}`;
 
-    // List
     const transactionList = document.getElementById('transaction-list');
     transactionList.innerHTML = bills.length ? '' : '<div style="text-align: center; color: #94a3b8; padding: 2rem;">暂无账单数据</div>';
-
+    
     bills.forEach(bill => {
         const item = document.createElement('div');
         item.className = 'transaction-item';
@@ -92,14 +83,11 @@ function renderDashboard(bills) {
         transactionList.appendChild(item);
     });
 
-    // Chart trend (group by day)
     updateSpendingChart(bills);
 }
 
 function updateSpendingChart(bills) {
     const ctx = document.getElementById('spendingChart').getContext('2d');
-
-    // Simple group by date
     const trend = {};
     bills.forEach(b => {
         const date = b.timestamp?.toDate ? b.timestamp.toDate().toLocaleDateString() : new Date().toLocaleDateString();
@@ -110,7 +98,7 @@ function updateSpendingChart(bills) {
     const data = Object.values(trend).reverse();
 
     if (spendingChart) spendingChart.destroy();
-
+    
     spendingChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -138,33 +126,31 @@ function updateSpendingChart(bills) {
     });
 }
 
-// Global functions for HTML access
 window.loginWithGoogle = loginWithGoogle;
 window.logout = logout;
-window.submitBill = async function () {
+window.submitBill = async function() {
     if (!currentUser) return alert("请先登录");
     const rawText = document.getElementById('raw-bill').value;
     if (!rawText) return;
 
-    // Use a simple mock parser as logic is now on client side
     const amountMatch = rawText.match(/(\d+\.?\d*)元/);
     const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
-
+    
     await addDoc(collection(db, "users", currentUser.uid, "bills"), {
         amount: amount,
         description: rawText,
         source: "Mobile",
         timestamp: serverTimestamp()
     });
-
+    
     document.getElementById('raw-bill').value = '';
 };
 
-window.submitInvestment = async function () {
+window.submitInvestment = async function() {
     if (!currentUser) return alert("请先登录");
     const name = document.getElementById('inv-name').value;
     const pl = parseFloat(document.getElementById('inv-pl').value);
-
+    
     if (!name || isNaN(pl)) return;
 
     await addDoc(collection(db, "users", currentUser.uid, "investments"), {

@@ -25,14 +25,11 @@ app.add_middleware(
 )
 
 # Firebase Admin Setup
-# If serviceAccountKey.json exists, use it. Otherwise, assume local env auth.
 cred_path = "serviceAccountKey.json"
 if os.path.exists(cred_path):
     cred = credentials.Certificate(cred_path)
     firebase_admin.initialize_app(cred)
 else:
-    # This might work if logged in via 'gcloud auth application-default login'
-    # Fallback to default if possible or provide warning
     try:
         firebase_admin.initialize_app()
     except Exception:
@@ -44,7 +41,7 @@ class BillInput(BaseModel):
     source: Optional[str] = None
     amount: Optional[float] = None
     description: Optional[str] = None
-    uid: str # We need the user UID to know where to store
+    uid: str
 
 class InvestmentInput(BaseModel):
     name: str
