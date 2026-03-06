@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherMoney | 自动记账 & 理财分析</title>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="glow" style="top: -10%; right: -5%;"></div>
+    <div class="glow" style="bottom: -10%; left: -5%;"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">AETHER MONEY.</div>
+            <div id="auth-container" style="display: flex; align-items: center; gap: 1rem;">
+                <div id="user-info" style="display: none; align-items: center; gap: 0.5rem;">
+                    <img id="user-photo" src=""
+                        style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);">
+                    <span id="user-name" style="font-size: 0.9rem;"></span>
+                    <button onclick="logout()" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem;"
+                        class="btn-secondary">登出</button>
+                </div>
+                <button id="login-btn" onclick="loginWithGoogle()" style="width: auto; padding: 0.5rem 1rem;"
+                    class="btn-secondary">Google 登录</button>
+                <div id="connection-status">
+                    <span class="status-dot">已连接</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="card">
+                <div class="card-title">本月总支出</div>
+                <div class="stat-value" id="month-spent">¥ 0.00</div>
+                <div class="stat-delta down">
+                    <span>↓</span> 比上月减少 12%
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">理财盈亏 (P&L)</div>
+                <div class="stat-value" id="total-pl">+¥ 0.00</div>
+                <div class="stat-delta up">
+                    <span>↑</span> 今日表现优异
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">净资产变化</div>
+                <div class="stat-value" id="net-wealth">¥ 0.00</div>
+                <div class="stat-delta up">
+                    <span>↑</span> 稳固上升中
+                </div>
+            </div>
+        </section>
+
+        <div class="main-layout">
+            <div class="left-col">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div class="card-title">支出趋势</div>
+                    <canvas id="spendingChart" height="200"></canvas>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">最近账单</div>
+                    <div class="transaction-list" id="transaction-list">
+                        <!-- Loaded via JS -->
+                        <div style="text-align: center; color: #94a3b8; padding: 2rem;">加载中...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div class="card-title">手动记账 / 模拟通知</div>
+                    <div class="input-group">
+                        <label
+                            style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;">原始通知字符串</label>
+                        <input type="text" id="raw-bill" placeholder="例如：支付宝：您记账15元">
+                    </div>
+                    <button onclick="submitBill()">快速录入</button>
+                    <p style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; line-height: 1.4;">
+                        * 可以在手机端通过 Tasker 或 iOS Shortcuts 发送 POST 请求至 <code>/api/bills</code>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">每日理财录入</div>
+                    <div class="input-group">
+                        <label
+                            style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;">产品名称</label>
+                        <input type="text" id="inv-name" placeholder="招商银行理财 / 股票">
+                    </div>
+                    <div class="input-group">
+                        <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;">当日盈亏
+                            (¥)</label>
+                        <input type="number" id="inv-pl" placeholder="+150.00 或 -50.00">
+                    </div>
+                    <button onclick="submitInvestment()" class="btn-secondary">记录今日收益</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

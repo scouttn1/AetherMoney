@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+
+# Firebase
+serviceAccountKey.json
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Database
+*.db
+*.sqlite3
+
+# Local secrets & IDE
+.idea/
+.vscode/
+.DS_Store
+node_modules/
+dist/
+build/
